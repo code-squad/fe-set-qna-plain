@@ -1,0 +1,192 @@
+:root {
+    font-size: 16px;
+    --line: 1px solid #dad3d3;
+}
+
+li {
+    list-style: none;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 2rem
+}
+
+h3 {
+    font-size: 1.5rem
+}
+
+
+/* Service */
+#main-header {
+    display: flex;
+    justify-content: space-between;
+    height: 4rem;
+    background: #03A9F4;
+    padding: 1rem 3rem;
+    color: #fff;
+    font-family: fantasy;
+}
+
+#main-header>* {
+    height: 4rem;
+    line-height: 4rem;
+}
+
+#main-header>h1 {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#main-header .login-btn {
+    font-size: 1.2rem;
+    cursor: pointer;
+    height: 4rem;
+    line-height: 4rem;
+}
+
+.main-wrap {
+    padding: 3rem;
+    overflow: hidden;
+}
+
+
+.qna {
+    background-color: #fffefe;
+    padding: 3rem;
+}
+
+.qna + .qna {
+    border-top: 1px solid #0000008c;
+    box-sizing: border-box;
+}
+
+.new-question-btn {
+    width: 7rem;
+    height: 3rem;
+    font-size: 1rem;
+    border-radius: 0.3rem;
+    background-color: #2196F3;
+    float: right;
+    margin-bottom: 1rem;
+    box-shadow: 1px 2px #e9ecef;
+    cursor: pointer;
+    color: #fff;
+}
+
+.qna-wrap {
+    clear: both;
+}
+
+.qna-title {
+    padding: 2rem;
+}
+
+
+.answer-count, .answer, .answer-list, .answer-form {
+    padding: 1rem 2rem;
+}
+
+.question {
+    border-top: var(--line);
+    border-bottom: var(--line);
+    padding: 2rem 2rem;
+}
+
+.answer-count {
+    padding-bottom: 0;
+    padding-left: 2rem;
+    color: #666;
+}
+
+.answer-list {
+    overflow: hidden;
+    border-bottom: 1px solid #dad3d3;
+}
+
+.answer-list.loading {
+    color:rgb(59, 101, 128);
+}
+
+.answer-list+.answer-list {
+    margin-top: 0.4rem;
+}
+
+.answer-content-textarea {
+    width: 40rem;
+    padding: 1rem;
+    font-size: 1rem;
+    max-width: 40rem;
+    max-height: 10rem;
+}
+
+.answer-form {
+    padding-top:0;
+    display: flex;
+}
+
+.answer-form > form {
+    padding: 1rem .5rem 1rem 2rem;
+}
+
+.answer-form > button {
+    margin: 1rem 0;
+    width: 5rem;
+}
+
+.answer-profile {
+    color: #909090;
+    margin-top: 1rem;
+}
+
+.new-question-wrap {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    height: 23rem;
+    background-color: white;
+    border: 1px solid #000;
+    padding: 3rem;
+    min-width: 450px;
+}
+
+.new-question-wrap > form > div {
+    margin-bottom: 3rem;
+}
+
+.new-question-wrap label {
+    display: block;
+    margin-bottom: .5rem;
+}
+
+.new-question-wrap input, .new-question-wrap  textarea {
+    width: 95%;
+}
+
+.new-question-wrap button[type=submit] {
+    width: 95%;
+    background-color: #259a4d;
+    padding: 0.5rem;
+    color: #fff;
+    height: 3rem;
+}
+
+.new-question-wrap > .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    width: 2rem;
+    background-color: #f1ecec;
+    height: 2rem;
+    text-align: center;
+    line-height: 2rem;
+}

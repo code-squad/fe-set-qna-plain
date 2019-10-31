@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles/reset.css">
+    <link rel="stylesheet" href="./styles/qna.css">
+    <title>Ajax Test</title>
+    <script src="plain.js" defer></script>
+    <script src="qna.js" defer></script>
+</head>
+
+<body>
+    <header id="main-header">
+        <h1>STACK OOOOVERFLOW &#x1f64b; </h1>
+        <div class="login-btn">로그인</div>
+    </header>
+
+    <div class="main-wrap">
+        <button class="new-question-btn">새로운질문</button>
+        <ul class="qna-wrap">
+        </ul>
+
+        <div class="new-question-wrap">
+            <div class="close-btn">X</div>
+            <form id="new-q-form" action="#" method="post">
+                <div>
+                    <label for="q-title">제목</label>
+                    <input type="text" name="title" id="q-title">
+                </div>
+                <div>
+                    <label for="q-content">내용</label>
+                    <textarea name="content" id="q-content" cols="30" rows="10"></textarea>
+                </div>
+                <button type="submit">질문등록</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
