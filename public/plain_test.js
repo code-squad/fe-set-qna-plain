@@ -2,12 +2,35 @@
 //Plain 구현
 const Plain = (() => {
   //구현이 필요해....
-t 
+  let date;
+  let comp;
+  let eff;
+  return {
+    renderComponent(Component) {
+        comp = Component;
+        tempcomp = comp(); 
+        tempcomp.render();
+        eff();
+        return tempcomp;
+    },
+    useState(_initVal) {
+      if(!date) date = _initVal;
+      function setDate(fn){
+        date = fn();
+        tempcomp = comp(); 
+        tempcomp.render();
+        if(eff) eff();
+      }
+      return [date, setDate];
+    },
+    useEffect(fn){
+      eff = fn;
+    },
+  }
 })();
 
 function plain_test() {
   const [foo, setFoo] = Plain.useState(``);
-
   const fireEvent = () => {
     setFoo(value => (new Date).toLocaleTimeString() || value);
   };
