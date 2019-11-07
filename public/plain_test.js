@@ -2,24 +2,23 @@
 //Plain 구현
 const Plain = (() => {
   //구현이 필요해....
-  let date;
-  let comp;
-  let eff;
+  let date, comp, eff;
+  function action(){
+    temp = comp(); 
+    temp.render();
+    if(eff) eff();
+    return temp;
+  }
   return {
     renderComponent(Component) {
         comp = Component;
-        tempcomp = comp(); 
-        tempcomp.render();
-        eff();
-        return tempcomp;
+        return action();
     },
     useState(_initVal) {
       if(!date) date = _initVal;
       function setDate(fn){
         date = fn();
-        tempcomp = comp(); 
-        tempcomp.render();
-        if(eff) eff();
+        action();
       }
       return [date, setDate];
     },
