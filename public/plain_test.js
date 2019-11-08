@@ -1,39 +1,44 @@
 
 //Plain 구현
 const Plain = (() => {
-  let component = null;
-  let runEffect = null;
-
   return {
-    renderComponent: (plain_test) => {
-      component = plain_test();
+    foo: null,
+    renderComponent(Component) {
+      const component = Component();
+      this.render.bind(this, component.render);
       return component;
     },
 
-    useState: (value) => {
-      value = [value];
+    useState(value) {
+      
+      this.foo = value;
+
+      debugger;
 
       const setFoo = (fn) => {
-        console.log(value);
-        console.log(fn(value));
-        component.render();
-        runEffect();
-        value = [fn(value)];
+        this.foo = fn(this.foo);
+        this.render();
       }
-
-      return [value, setFoo];
+      return [this.foo, setFoo];
     },
 
-    useEffect: (fn) => {
-      runEffect = fn;
+    effect(fn) {
+      fn();
+    },
+
+    render(fn) {
+      fn();
+      this.effect();
+    },
+
+    useEffect(fn) {
+      this.effect.bind(this, fn);
     }
   }
 })();
 
 function plain_test() {
   const [foo, setFoo] = Plain.useState(``);
-
-  debugger;
 
   const fireEvent = () => {
     setFoo(value => (new Date).toLocaleTimeString() || value);
@@ -45,7 +50,7 @@ function plain_test() {
   });
 
   return {
-    render() {      
+    render() {
       console.log(`[render] : ${foo}`);
     },
     fakeEvent() {
