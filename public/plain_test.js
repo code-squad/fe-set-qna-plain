@@ -1,6 +1,5 @@
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
   let date, comp, eff;
   function action() {
     temp = comp();
