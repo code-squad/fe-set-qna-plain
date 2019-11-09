@@ -10,7 +10,7 @@ const Plain = (() => {
         (getTime_fn) => {
           time = getTime_fn();
           plain_fn().render();
-          effect_fn();
+          if(effect_fn) effect_fn();
         }
       ];
     },
@@ -20,7 +20,7 @@ const Plain = (() => {
     renderComponent(fn) {
       plain_fn = fn;
       plain_fn().render();
-      effect_fn();
+      if(effect_fn) effect_fn();
       return plain_fn();
     }
   }
