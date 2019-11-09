@@ -2,14 +2,17 @@
 //Plain 구현
 const Plain = (() => {
   let _val;
+  let _comp;
 
   function stateChanged() {
-    Plain.renderComponent(plain_test);
+    Plain.renderComponent(_comp);
   }
 
   return {
     renderComponent(Component) {
-      const comp = Component();
+      // 내부에서 사용하기 위해 저장
+      _comp = Component;
+      const comp = _comp();
       comp.render();
       return comp;
     },
