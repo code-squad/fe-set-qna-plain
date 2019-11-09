@@ -1,8 +1,34 @@
 
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
-t 
+  let _val;
+
+  function stateChanged() {
+    Plain.renderComponent(plain_test);
+  }
+
+  return {
+    renderComponent(Component) {
+      const comp = Component();
+      comp.render();
+      return comp;
+    },
+    useState(_initVal) {
+      const foo = _val || _initVal;
+      
+      const setFoo = _newVal => {
+        _val = _newVal();
+        // foo 변경시 다시 렌더링
+        stateChanged();
+      };
+
+      return [foo, setFoo];
+    },
+    useEffect(callback) {
+      // useEffect를 plain_test의 fakeEvent queue와 함께 실행
+      setTimeout(callback, 0);
+    }
+  }
 })();
 
 function plain_test() {
