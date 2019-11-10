@@ -1,20 +1,30 @@
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
-  let _val;
+  let value;
+  let effectFn;
+  let thisComp;
 
   return {
     useState(initVal) {
-      const state = _val || initVal;
+      let state = value || initVal;
       const setState = newVal => {
-        _val = newVal;
+        value = newVal();
+        this.renderComponent(thisComp);
       };
       return [state, setState];
     },
+
     renderComponent(Component) {
+      thisComp = Component;
       const comp = Component();
-      comp.render();
+      render = comp.render;
+
+      render();
+      effectFn();
       return comp;
+    },
+    useEffect(fn) {
+      effectFn = fn;
     }
   };
 })();
@@ -39,7 +49,8 @@ function plain_test() {
       fireEvent();
     },
     initComponent() {
-      //초기화코드가 있다면 넣을수도 있음
+      this.render();
+      this.useEffect();
     }
   };
 }
