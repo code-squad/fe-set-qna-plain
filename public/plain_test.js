@@ -40,12 +40,6 @@ const Plain = (() => {
     },
     useState(_initValue) {
       if (!value) value = _initValue;
-      if (!setValue) {  
-        setValue = (fn) => {
-          value = fn();
-          this.render();
-        };
-      }
       return [value, setValue];
     }
   }
