@@ -1,8 +1,54 @@
 
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
-t 
+  let value;
+  let comp;
+  let effects = {};
+
+  const render = () => {
+    const temp = comp();
+      temp.render();
+      for (const key in effects) {
+        effects[key]();
+      }
+      return temp;
+  }
+
+  const setValue = (fn) => {
+    value = fn();
+    render();
+  };
+
+  return {
+    renderComponent(Component) {
+      comp = Component;
+      return render();
+    },
+    render() {
+      const temp = comp();
+      temp.render();
+      for (const key in effects) {
+        effects[key]();
+      }
+      return temp;
+    },
+    useEffect(fn) {
+      if (!fn) {
+        return;
+      }
+      effects[fn.name] = fn;
+    },
+    useState(_initValue) {
+      if (!value) value = _initValue;
+      if (!setValue) {  
+        setValue = (fn) => {
+          value = fn();
+          this.render();
+        };
+      }
+      return [value, setValue];
+    }
+  }
 })();
 
 function plain_test() {
