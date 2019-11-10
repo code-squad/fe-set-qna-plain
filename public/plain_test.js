@@ -1,15 +1,29 @@
-
 //Plain 구현
 const Plain = (() => {
   //구현이 필요해....
-t 
+  let _val;
+
+  return {
+    useState(initVal) {
+      const state = _val || initVal;
+      const setState = newVal => {
+        _val = newVal;
+      };
+      return [state, setState];
+    },
+    renderComponent(Component) {
+      const comp = Component();
+      comp.render();
+      return comp;
+    }
+  };
 })();
 
 function plain_test() {
   const [foo, setFoo] = Plain.useState(``);
 
   const fireEvent = () => {
-    setFoo(value => (new Date).toLocaleTimeString() || value);
+    setFoo(value => new Date().toLocaleTimeString() || value);
   };
 
   Plain.useEffect(() => {
@@ -33,10 +47,12 @@ function plain_test() {
 let pd = Plain.renderComponent(plain_test);
 
 (async function loop() {
-  for(let i=0; i<5; i++) {
-    await new Promise( (resolve) => setTimeout( ()=> {
-      pd.fakeEvent();
-    resolve()
-    }, 1000));
+  for (let i = 0; i < 5; i++) {
+    await new Promise(resolve =>
+      setTimeout(() => {
+        pd.fakeEvent();
+        resolve();
+      }, 1000)
+    );
   }
 })();
