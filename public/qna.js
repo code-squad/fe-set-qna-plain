@@ -2,8 +2,32 @@
 const $ = document.querySelector.bind(document);
 const URL = {
   INIT: "http://localhost:3000/api/questions",
-  LOGIN: "http://localhost:3000/api/login"
+  LOGIN: "http://localhost:3000/api/login",
+  CHECK_TOKEN_VALIDATION: "http://localhost:3000/api/token-validation",
 };
+const LOGIN_STATUS = {
+  LOGIN: 0,
+  LOGOUT: 1,
+};
+const headers = {
+  'Content-Type': 'application/json',
+};
+const $loginBtn = document.querySelector('.login-btn');
+const $logoutBtn = document.querySelector('.logout-btn');
+
+function toggleLoginBtn(status) {
+  switch (status) {
+    case LOGIN_STATUS.LOGIN:
+      $loginBtn.style.display = 'none';
+      $logoutBtn.style.display = 'block';
+      break;
+    case LOGIN_STATUS.LOGOUT:
+        $loginBtn.style.display = 'block';
+        $logoutBtn.style.display = 'none';
+      break;
+  }
+}
+
 function getQnATemplate(list) {
   return list.reduce((html, { title, question, questionId, answers }) => {
     return (
@@ -61,9 +85,26 @@ function QNA() {
       const res = await fetch(URL.INIT);
       const result = await res.json();
       setQnAList(data => result.list || data);
+      callback();
     } catch (err) {
       console.error("render fetching error");
     }
+  }
+  function registerEvent() {
+    $loginBtn.addEventListener('click', function() {
+      const body = JSON.stringify({ user: 'dahoon' });
+      fetch(URL.LOGIN, { 
+        method: 'POST', 
+        headers, 
+        body 
+      })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log('[Login Success]');
+        localStorage.setItem('token', res.token);
+        toggleLoginBtn(LOGIN_STATUS.LOGIN);
+      });
+    });
   }
 
   return {
@@ -71,7 +112,10 @@ function QNA() {
       if(qnaList.length > 0) renderQnA(qnaList)
     },
     initComponent() {
-      initRender(()=>{console.log("init render end")})
+      initRender(()=>{
+        console.log("init render end");
+        registerEvent();
+      });
     }
   };
 }
@@ -79,4 +123,29 @@ function QNA() {
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
+
+  const token = localStorage.getItem('token');
+  console.log('token : ', token);
+  if (!token) {
+    return;
+  }
+
+  const tempHeader = {
+    ...headers,
+    'Authorization': `Bearer ${token}`,
+  };
+
+  fetch(URL.CHECK_TOKEN_VALIDATION, { 
+    method: 'POST', 
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+  .then((res) => res.json())
+  .then((res) => {
+    console.log('[Check Token Validation]', res);
+    headers.Authorization = token;
+    toggleLoginBtn(LOGIN_STATUS.LOGIN);
+  });
 });

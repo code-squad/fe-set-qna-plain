@@ -6,6 +6,10 @@ const auth = require("./auth.js");
 const express_jwt = require("express-jwt");
 const response_mock = require("./mock-data.js");
 
+app.set('views', __dirname + '/../public');
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
+
 //token발급에서 사용되는 임시비밀번호
 const __secret_key = "topsecret";
 
@@ -23,6 +27,10 @@ app.use(express.static("./public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const jsonParser = bodyParser.json();
+
+app.get('/',function(req,res){
+  res.render('qna.html')
+});
 
 //routing 시작
 //로그인처리, generatorJwt함수를 통해서 jwt token발급
