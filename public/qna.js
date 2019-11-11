@@ -90,36 +90,67 @@ function QNA() {
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
+
+  const token = localStorage.getItem('token')
+  if (token) isTokenValid(token) ? qnaService.initComponent() : '';
+
   $('.login-btn').addEventListener("click", () => $('.login-btn').innerText === '로그인' ? getLogin() : getLogout())
 });
 
 const getLogin = () => {
-  const data = {
+  const fetchData = {
     user: 'soom'
   };
+  let isSuccess = false;
   fetch(URL.LOGIN, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(fetchData),
     })
     .then(response => response.json())
     .then(data => {
       if (data.auth) {
-        console.log(data.message);
+        console.log(data.message, '로그인 되셨습니당...');
         localStorage.setItem('token', data.token);
-        console.log('로그인 되셨습니당...')
-        $('.login-btn').innerText = "로그아웃";
+        localStorage.setItem('username', fetchData.user);
+        isSuccess = !isSuccess;
       } else {
-        console.log('error')
+        console.log('login: error')
+      }
+    }).then(() => {
+      if (isSuccess) {
+        const userName = localStorage.getItem('username');
+        $('.login-btn').innerText = userName;
       }
     })
     .catch(e => console.log(e));
 }
 
 const getLogout = () => {
-  localStorage.removeItem('token');
+  localStorage.clear();
   $('.login-btn').innerText = "로그인";
   console.log('로그아웃 되셨습니당...')
+}
+
+const isTokenValid = () => {
+  fetch("/api/token-validation", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.authResult) {
+        localStorage.setItem('username', data.id)
+        return true;
+      } else {
+        console.log('token-validation: error');
+        return false;
+      }
+    })
+    .catch(e => console.log(e))
 }
