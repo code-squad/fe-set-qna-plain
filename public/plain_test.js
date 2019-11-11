@@ -1,8 +1,29 @@
 
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
-t 
+  let time, plain_fn, effect_fn;
+  return {
+    useState(v) {
+      time = time || v;
+      return [
+        time,
+        (getTime_fn) => {
+          time = getTime_fn();
+          plain_fn().render();
+          if(effect_fn) effect_fn();
+        }
+      ];
+    },
+    useEffect(fn) {
+      effect_fn = fn;
+    },
+    renderComponent(fn) {
+      plain_fn = fn;
+      plain_fn().render();
+      if(effect_fn) effect_fn();
+      return plain_fn();
+    }
+  }
 })();
 
 function plain_test() {
