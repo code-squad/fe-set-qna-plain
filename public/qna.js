@@ -128,9 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const token = localStorage.getItem('token');
   console.log('token : ', token);
-  if (!token) {
-    return;
-  }
+  
+  if (!token) return;
 
   const tempHeader = {
     ...headers,
