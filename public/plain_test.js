@@ -1,8 +1,30 @@
 
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
-t 
+  let val;
+  let useEffectFn;
+  let planTestObj;
+  
+  return {
+    useState: (initVal)=> {
+      val = !val ? initVal : val; 
+      return [
+        val,
+        param => {
+          planTestObj().render();
+          val = param();
+          useEffectFn();
+        }
+      ]
+    },
+    useEffect: cb => {
+      useEffectFn = cb;
+    },
+    renderComponent: obj => {
+      planTestObj = obj;
+      return planTestObj();
+    }
+  }
 })();
 
 function plain_test() {
@@ -25,7 +47,6 @@ function plain_test() {
       fireEvent();
     },
     initComponent() {
-      //초기화코드가 있다면 넣을수도 있음
     }
   };
 }
