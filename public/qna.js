@@ -103,6 +103,8 @@ function QNA() {
         console.log('[Login Success]');
         localStorage.setItem('token', res.token);
         toggleLoginBtn(LOGIN_STATUS.LOGIN);
+      }).catch((e) => {
+        throw new Error('[Login Failure]');
       });
     });
   }
