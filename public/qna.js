@@ -1,4 +1,3 @@
-
 const $ = document.querySelector.bind(document);
 const URL = {
   INIT: "http://localhost:3000/api/questions",

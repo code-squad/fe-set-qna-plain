@@ -18,7 +18,7 @@ const Plain = (() => {
       thisComp = Component;
       const comp = Component();
       comp.render();
-      effectFn();
+      // effectFn();
       return comp;
     },
     useEffect(fn) {
