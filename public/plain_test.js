@@ -26,21 +26,10 @@ const Plain = (() => {
       const foo = _val || _initVal;
 
       const setFoo = _newVal => {
-        let prevVal;
         _hasChanged = false;
         
-        switch (typeof _newVal) {
-          case 'function':
-            prevVal = _newVal();
-            break;
-        
-          default:
-            prevVal = _newVal;
-            break;
-        }
-        
-        if (_val !== prevVal) {
-          _val = prevVal;
+        if (_val !== _newVal) {
+          _val = _newVal();
           _hasChanged = true;
           stateChanged();
         }
