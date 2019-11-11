@@ -2,37 +2,28 @@
 //Plain 구현
 const Plain = (() => {
   return {
-    foo: null,
+    value: '',
+    component: null,
     renderComponent(Component) {
-      const component = Component();
-      this.render.bind(this, component.render);
-      return component;
-    },
-
-    useState(value) {
-      
-      this.foo = value;
-
-      debugger;
-
-      const setFoo = (fn) => {
-        this.foo = fn(this.foo);
-        this.render();
+      this.component = Component();
+      this.render = () => {
+        this.component.render.apply(this);
+        this.effect();
       }
-      return [this.foo, setFoo];
+      this.render();
+      return this.component;
     },
+    useState() {
+      this.value = 'cozima';
 
-    effect(fn) {
-      fn();
+      return [this.value, (fn) => {
+        this.value = fn(this.value);
+        this.render();
+      }]
+      
     },
-
-    render(fn) {
-      fn();
-      this.effect();
-    },
-
     useEffect(fn) {
-      this.effect.bind(this, fn);
+      this.effect = fn;
     }
   }
 })();
