@@ -98,10 +98,10 @@
           headers, 
           body 
         })
-        .then((res) => res.json())
-        .then((res) => {
+        .then((response) => response.json())
+        .then((responseData) => {
           console.log('[Login Success]');
-          localStorage.setItem('token', res.token);
+          localStorage.setItem('token', responseData.token);
           toggleLoginBtn(LOGIN_STATUS.LOGIN);
         }).catch((e) => {
           throw new Error('[Login Failure]');
