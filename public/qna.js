@@ -90,7 +90,7 @@ function QNA() {
       console.error("render fetching error");
     }
   }
-  function registEvent() {
+  function registerEvent() {
     $loginBtn.addEventListener('click', function() {
       const body = JSON.stringify({ user: 'dahoon' });
       fetch(URL.LOGIN, { 
@@ -114,7 +114,7 @@ function QNA() {
     initComponent() {
       initRender(()=>{
         console.log("init render end");
-        registEvent();
+        registerEvent();
       });
     }
   };
