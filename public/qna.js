@@ -12,8 +12,16 @@
   const headers = {
     'Content-Type': 'application/json',
   };
-  const $loginBtn = document.querySelector('.login-btn');
-  const $logoutBtn = document.querySelector('.logout-btn');
+  const $loginBtn = $('.login-btn');
+  const $logoutBtn = $('.logout-btn');
+  const request = (url, param = {}) => {
+    return fetch(url, param).then((res) => {
+      if (res.status === 400) {
+        throw new Error('Bad Request');
+      }
+      return res;
+    })
+  }
 
   function toggleLoginBtn(status) {
     switch (status) {
@@ -82,7 +90,7 @@
     }
     async function initRender(callback) {
       try  {
-        const res = await fetch(URL.INIT);
+        const res = await request(URL.INIT);
         const result = await res.json();
         setQnAList(data => result.list || data);
         callback();
@@ -93,7 +101,7 @@
     function registerEvent() {
       $loginBtn.addEventListener('click', () => {
         const body = JSON.stringify({ user: 'dahoon' });
-        fetch(URL.LOGIN, { 
+        request(URL.LOGIN, { 
           method: 'POST', 
           headers, 
           body 
@@ -136,7 +144,7 @@
       'Authorization': `Bearer ${token}`,
     };
 
-    fetch(URL.CHECK_TOKEN_VALIDATION, { 
+    request(URL.CHECK_TOKEN_VALIDATION, { 
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json',
