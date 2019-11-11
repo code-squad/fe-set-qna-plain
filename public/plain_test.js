@@ -3,9 +3,15 @@
 const Plain = (() => {
   let _val;
   let _comp;
+  let _effect;
+  let _hasChanged;
 
   function stateChanged() {
     Plain.renderComponent(_comp);
+    
+    if (_hasChanged) {
+      _effect();
+    }
   }
 
   return {
@@ -18,18 +24,32 @@ const Plain = (() => {
     },
     useState(_initVal) {
       const foo = _val || _initVal;
-      
+
       const setFoo = _newVal => {
-        _val = _newVal();
-        // foo 변경시 다시 렌더링
-        stateChanged();
+        let prevVal;
+        _hasChanged = false;
+        
+        switch (typeof _newVal) {
+          case 'function':
+            prevVal = _newVal();
+            break;
+        
+          default:
+            prevVal = _newVal;
+            break;
+        }
+        
+        if (_val !== prevVal) {
+          _val = prevVal;
+          _hasChanged = true;
+          stateChanged();
+        }
       };
 
       return [foo, setFoo];
     },
     useEffect(callback) {
-      // useEffect를 plain_test의 fakeEvent queue와 함께 실행
-      setTimeout(callback, 0);
+      _effect = callback;
     }
   }
 })();
