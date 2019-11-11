@@ -62,7 +62,7 @@ function QNA() {
   const [loginId, setLoginId] = Plain.useState({USER_ID: 'okys'});
 
   // localStorage token 확인
-  const isAuth = (token) => localStorage.getItem('token');
+  const isAuth = token => localStorage.getItem('token');
 
   // token 유효성 검사
   const authValidation = token => {
