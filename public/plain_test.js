@@ -2,29 +2,23 @@
 //Plain 구현
 const Plain = (() => {
   return {
-    value: '',
-    component: null,
     renderComponent(Component) {
-      this.component = Component();
-      this.render = () => {
-        this.component.render.apply(this);
+      this.setFoo = (fn) => {
+        this.value = typeof fn === 'function' ? fn(this.value) : null;
+        this.component = Component();
+        this.component.render();
         this.effect();
-      }
-      this.render();
+      };
+      this.setFoo();
       return this.component;
     },
-    useState() {
-      this.value = 'cozima';
-
-      return [this.value, (fn) => {
-        this.value = fn(this.value);
-        this.render();
-      }]
-      
+    useState(value) {
+      return [this.value || value, this.setFoo];
     },
-    useEffect(fn) {
-      this.effect = fn;
-    }
+
+    useEffect(e){
+      this.effect = e;
+    },
   }
 })();
 
