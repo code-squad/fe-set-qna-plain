@@ -2,8 +2,20 @@
 const $ = document.querySelector.bind(document);
 const URL = {
   INIT: "http://localhost:3000/api/questions",
-  LOGIN: "http://localhost:3000/api/login"
+  LOGIN: "http://localhost:3000/api/login",
+  LOGIN_VALIDATION: "http://localhost:3000/api/token-validation"
 };
+const MESSAGE = {
+  LOGIN: '로그인',
+  LOGOUT: '로그아웃'
+};
+const reqHeaders = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+};
+
 function getQnATemplate(list) {
   return list.reduce((html, { title, question, questionId, answers }) => {
     return (
@@ -27,7 +39,6 @@ function getQnATemplate(list) {
   }, ``);
 }
 
-
 function getAnswerTemplate(answers) {
   return answers.reduce((html, { content, name, date }) => {
     return (
@@ -44,18 +55,70 @@ function getAnswerTemplate(answers) {
   }, ``);
 }
 
+function getLoginBtnTemplate() {
+  return (`
+   <button type="button" class="logout-btn">로그아웃</button> 
+  `)
+}
+
 //Component
 function QNA() {
 
   const [qnaList, setQnAList] = Plain.useState([]);
-  //login 과정도 useState로 구현할 수 있음
-  //const [loginId, setLoginId] = Plain.useState(null);
+  const [loginId, setLoginId] = Plain.useState({USER_ID: 'okys'});
+
+  // localStorage token 확인
+  const isAuth = (token) => localStorage.getItem('token');
+
+  // token 유효성 검사
+  const authValidation = token => {
+    fetch(URL.LOGIN_VALIDATION, {
+      ...reqHeaders,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(resp => resp.json())
+    .then(data => console.log(JSON.stringify(data)))
+    .then(() => {
+      setLoginBtnMessage(MESSAGE.LOGOUT);
+      renderLoginBtn();
+    })
+    .catch(err => console.log(err));
+  }
+
+  // 로그인 버튼의 메시지를 변경하는 방식으로 처리함.
+  const setLoginBtnMessage = message => $('.login-btn').innerHTML = message;
+
+  const login = ({ USER_ID }) => {
+    fetch(URL.LOGIN, {
+      ...reqHeaders,
+      body: JSON.stringify({
+        "user": USER_ID
+      })
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      console.warn('Success:', JSON.stringify(data.message))
+      localStorage.setItem('token', data.token);
+    })
+    .catch(err => console.log(err));
+  }
+
+  // ID 초기화 및 토큰 삭제
+  const logout = () => {
+    localStorage.removeItem('token');
+    // Plain.js 가 완전하지 않기 때문에 완전히 지워지지는 않음.
+    setLoginId(() => null);
+    console.warn('logout.')
+  }
 
   function renderQnA(data) {
     const target = $(".qna-wrap");
     const resultHTML = getQnATemplate(data);
     target.innerHTML = resultHTML;
   }
+
   async function initRender(callback) {
     try  {
       const res = await fetch(URL.INIT);
@@ -71,12 +134,28 @@ function QNA() {
       if(qnaList.length > 0) renderQnA(qnaList)
     },
     initComponent() {
-      initRender(()=>{console.log("init render end")})
+      initRender(()=>{console.log("init render end")});
+      setLoginId(()=>({ USER_ID: 'okys' }));
+      $(".login-btn").addEventListener("click", this.handleLoginClick);
+    },
+    handleLoginClick() {
+      if (!isAuth()) {
+        login(loginId);
+        setLoginBtnMessage(MESSAGE.LOGOUT);
+      } else {
+        logout();
+        setLoginBtnMessage(MESSAGE.LOGIN);
+      }
+    },
+    initAuth() {
+      const authToken = isAuth();
+      authToken && authValidation(authToken);
     }
   };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
+  qnaService.initAuth();
   qnaService.initComponent();
 });
