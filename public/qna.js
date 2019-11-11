@@ -55,12 +55,6 @@ function getAnswerTemplate(answers) {
   }, ``);
 }
 
-function getLoginBtnTemplate() {
-  return (`
-   <button type="button" class="logout-btn">로그아웃</button> 
-  `)
-}
-
 //Component
 function QNA() {
 
