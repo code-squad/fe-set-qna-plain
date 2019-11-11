@@ -90,12 +90,10 @@ function QNA() {
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
-  document.querySelector('.login-btn').addEventListener("click", () => {
-    getLogin();
-  })
+  $('.login-btn').addEventListener("click", () => $('.login-btn').innerText === '로그인' ? getLogin() : getLogout())
 });
 
-function getLogin() {
+const getLogin = () => {
   const data = {
     user: 'soom'
   };
@@ -111,8 +109,17 @@ function getLogin() {
       if (data.auth) {
         console.log(data.message);
         localStorage.setItem('token', data.token);
+        console.log('로그인 되셨습니당...')
+        $('.login-btn').innerText = "로그아웃";
+      } else {
+        console.log('error')
       }
     })
     .catch(e => console.log(e));
+}
 
+const getLogout = () => {
+  localStorage.removeItem('token');
+  $('.login-btn').innerText = "로그인";
+  console.log('로그아웃 되셨습니당...')
 }
