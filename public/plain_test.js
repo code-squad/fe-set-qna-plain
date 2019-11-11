@@ -2,7 +2,44 @@
 //Plain 구현
 const Plain = (() => {
   //구현이 필요해....
-t 
+
+  // 테스트
+  debugger;
+
+  // 변수 선언
+  let setValue;
+  let readComponent;
+  let showEffectFunction;
+
+  return {
+    // renderComponent 구현
+    renderComponent (Component) {
+      readComponent = Component();
+        
+        // Component 초기화?
+        readComponent.render();
+        showEffectFunction();
+      
+        return readComponent;
+    },
+    // useState 구현
+    useState (initValue) {
+      let foo = setValue || initValue;
+      let setFoo = (newValue) => {
+        foo = newValue();
+        
+        // Component 재랜딩
+        readComponent.render();
+        showEffectFunction();
+      }
+      return [foo, setFoo];
+    },
+    // useEffect 구현
+    useEffect (effectFunction) {
+      showEffectFunction = effectFunction;
+      return showEffectFunction;
+    }
+  }
 })();
 
 function plain_test() {
