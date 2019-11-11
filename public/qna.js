@@ -3,8 +3,14 @@ const URL = {
   INIT: "http://localhost:3000/api/questions",
   LOGIN: "http://localhost:3000/api/login"
 };
+
 function getQnATemplate(list) {
-  return list.reduce((html, { title, question, questionId, answers }) => {
+  return list.reduce((html, {
+    title,
+    question,
+    questionId,
+    answers
+  }) => {
     return (
       html +
       ` <li class="qna" _questionId=${+questionId}>
@@ -28,7 +34,11 @@ function getQnATemplate(list) {
 
 
 function getAnswerTemplate(answers) {
-  return answers.reduce((html, { content, name, date }) => {
+  return answers.reduce((html, {
+    content,
+    name,
+    date
+  }) => {
     return (
       html +
       `
@@ -56,7 +66,7 @@ function QNA() {
     target.innerHTML = resultHTML;
   }
   async function initRender(callback) {
-    try  {
+    try {
       const res = await fetch(URL.INIT);
       const result = await res.json();
       setQnAList(data => result.list || data);
@@ -67,10 +77,12 @@ function QNA() {
 
   return {
     render() {
-      if(qnaList.length > 0) renderQnA(qnaList)
+      if (qnaList.length > 0) renderQnA(qnaList)
     },
     initComponent() {
-      initRender(()=>{console.log("init render end")})
+      initRender(() => {
+        console.log("init render end")
+      })
     }
   };
 }
@@ -78,4 +90,29 @@ function QNA() {
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
+  document.querySelector('.login-btn').addEventListener("click", () => {
+    getLogin();
+  })
 });
+
+function getLogin() {
+  const data = {
+    user: 'soom'
+  };
+  fetch(URL.LOGIN, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.auth) {
+        console.log(data.message);
+        localStorage.setItem('token', data.token);
+      }
+    })
+    .catch(e => console.log(e));
+
+}
