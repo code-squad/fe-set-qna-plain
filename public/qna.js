@@ -91,7 +91,7 @@ function QNA() {
     }
   }
   function registerEvent() {
-    $loginBtn.addEventListener('click', function() {
+    $loginBtn.addEventListener('click', () => {
       const body = JSON.stringify({ user: 'dahoon' });
       fetch(URL.LOGIN, { 
         method: 'POST', 
