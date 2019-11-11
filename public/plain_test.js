@@ -8,10 +8,6 @@ const Plain = (() => {
 
   function stateChanged() {
     Plain.renderComponent(_comp);
-    
-    if (_hasChanged) {
-      _effect();
-    }
   }
 
   return {
@@ -20,6 +16,8 @@ const Plain = (() => {
       _comp = Component;
       const comp = _comp();
       comp.render();
+      _effect && _effect();
+
       return comp;
     },
     useState(_initVal) {
