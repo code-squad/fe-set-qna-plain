@@ -70,6 +70,7 @@ function QNA() {
         storage.setItem('token', res.token);
         // 실행시 에러가 발생해서 일단 주석 처리
         // setLoginId(() => id);
+        $('.login-btn').innerText = `로그아웃${id}`;
       })
   }
   async function initRender(callback) {
@@ -94,7 +95,20 @@ function QNA() {
   };
 }
 
+const checkTokenValid = () => {
+  const token = window.localStorage.getItem('token');
+  if(!token) return;
+  fetch('/api/token-validation',{
+    method: 'post',
+    headers: { 'Authorization': `Bearer ${token}` },
+  }).then(res => res.json())
+    .then(res => {
+      if(res.authResult) $('.login-btn').innerText = `로그아웃(${res.id})`;
+    })
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
+  checkTokenValid();
 });
