@@ -80,13 +80,63 @@
   function QNA() {
 
     const [qnaList, setQnAList] = Plain.useState([]);
+    let isCreating = false;
     //login 과정도 useState로 구현할 수 있음
     //const [loginId, setLoginId] = Plain.useState(null);
+    let controller = null;
+
+    const registerComment = async (questionId, newAnswer, signal) => {
+      try {
+        const res = await request(`/api/questions/${questionId}/answers`, { 
+          method: 'POST', 
+          headers,
+          signal,
+          body: JSON.stringify(newAnswer),
+        });
+
+        if (res.status === 200) {
+          const targetQna = qnaList.find((qna) => {
+            return qna.questionId == questionId
+          });
+          targetQna.answers.push(newAnswer);
+          setQnAList(() => qnaList);
+        }
+      } finally {
+        controller = null;
+      }
+    };
+
+    const handleCommentSubmit = (e) => {
+      if (!!controller) {
+        controller.abort();
+      }
+      controller = new AbortController();
+      const signal = controller.signal;
+
+      const $commentBtn = e.target;
+      const $commentRootNode = $commentBtn.closest('li');
+      const $commnetTextarea = $commentRootNode.querySelector('textarea');
+
+      if(!$commentRootNode) throw new Error('Cannot find target element');
+
+      const questionId = $commentRootNode.getAttribute('_questionid');
+      const newAnswer = {
+        content: $commnetTextarea.value,
+        name: 'dahoon',
+        date: new Date().toISOString().split('T')[0],
+      }
+      
+      registerComment(questionId, newAnswer, signal);
+    };
 
     function renderQnA(data) {
       const target = $(".qna-wrap");
       const resultHTML = getQnATemplate(data);
       target.innerHTML = resultHTML;
+
+      document.querySelectorAll('.comment-submit').forEach((node) => {
+        node.addEventListener('click', handleCommentSubmit);
+      });
     }
     async function initRender(callback) {
       try  {
@@ -154,7 +204,7 @@
     .then((res) => res.json())
     .then((res) => {
       console.log('[Check Token Validation]', res);
-      headers.Authorization = token;
+      headers.Authorization = `Bearer ${token}`;
       toggleLoginBtn(LOGIN_STATUS.LOGIN);
     });
   });
