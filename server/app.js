@@ -68,6 +68,15 @@ app.post(
     //Promise를 활용한 지연 응답. 
     //res.json메서드를 활용한 응답.
     //여기에 구현 필요
+    setTimeout(() => {
+      //DB에 연결되어있는게 아니기 때문에 console.log로 대체
+      console.log(`[Register comment] questionid = ${req.params.questionid}`);
+      console.log(`[Register comment] comment : `, req.body.content);
+
+      res.json({
+        "status": "ok",
+      });
+    }, 3000);
   }
 );
 
