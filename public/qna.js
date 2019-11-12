@@ -94,11 +94,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
 
+  checkTokenValidation();
+  $('.login-btn').addEventListener("click", handleOnClick);
+});
+
+const checkTokenValidation = () => {
   const token = localStorage.getItem('token');
   if (token) isTokenValid(token);
-
-  $('.login-btn').addEventListener("click", handleOnClick)
-});
+}
 
 const handleOnClick = () => {
   const token = localStorage.getItem('token');
