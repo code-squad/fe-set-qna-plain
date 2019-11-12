@@ -1,8 +1,44 @@
 
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
-t 
+  let _val;
+  let _comp;
+  let _effect;
+  let _hasChanged;
+
+  function stateChanged() {
+    Plain.renderComponent(_comp);
+  }
+
+  return {
+    renderComponent(Component) {
+      // 내부에서 사용하기 위해 저장
+      _comp = Component;
+      const comp = _comp();
+      comp.render();
+      _effect && _effect();
+
+      return comp;
+    },
+    useState(_initVal) {
+      const foo = _val || _initVal;
+
+      const setFoo = _newVal => {
+        _hasChanged = false;
+        
+        if (_val !== _newVal) {
+          _val = _newVal();
+          _hasChanged = true;
+          stateChanged();
+        }
+      };
+      
+      return [foo, setFoo];
+    },
+    useEffect(callback) {
+      _effect = callback;
+    }
+  }
 })();
 
 function plain_test() {
