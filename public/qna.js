@@ -1,7 +1,8 @@
 const $ = document.querySelector.bind(document);
 const URL = {
   INIT: "http://localhost:3000/api/questions",
-  LOGIN: "http://localhost:3000/api/login"
+  LOGIN: "http://localhost:3000/api/login",
+  VALIDATION: "http://localhost:3000/api/token-validation"
 };
 
 function getQnATemplate(list) {
@@ -87,12 +88,14 @@ function QNA() {
   };
 }
 
+let validation = false;
+
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
 
-  const token = localStorage.getItem('token')
-  if (token) isTokenValid(token) ? qnaService.initComponent() : '';
+  const token = localStorage.getItem('token');
+  if (token) isTokenValid(token);
 
   $('.login-btn').addEventListener("click", () => {
     $('.login-btn').innerText === '로그인' ? getLogin() : getLogout()
@@ -121,8 +124,7 @@ const getLogin = () => {
 const setLoginInfo = (message, token, userName) => {
   console.log(message, '로그인 되셨습니당...');
   localStorage.setItem('token', token);
-  localStorage.setItem('username', userName);
-  $('.login-btn').innerText = userName;
+  setUserName(userName);
 }
 
 const getLogout = () => {
@@ -131,16 +133,28 @@ const getLogout = () => {
   console.log('로그아웃 되셨습니당...')
 }
 
-const isTokenValid = () => {
+const isTokenValid = token => {
   const fetchData = {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
+      'Authorization': `Bearer ${token}`
     }
   }
-  fetch("/api/token-validation", fetchData)
+  fetch(URL.VALIDATION, fetchData)
     .then(response => response.json())
-    .then(data => data.authResult ? localStorage.setItem('username', data.id) : console.log('token-validation: error'))
-    .catch(e => console.log(e))
+    .then(data => {
+      if (data.authResult) {
+        setUserName(data.id);
+        validation = !validation;
+      } else {
+        console.log('토큰이 유효하지 않습니다.');
+        getLogout();
+      }
+    })
+    .catch(e => console.log(e));
+}
+
+const setUserName = (userName) => {
+  localStorage.setItem('username', userName);
+  $('.login-btn').innerText = userName;
 }
