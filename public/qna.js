@@ -125,8 +125,6 @@ const setLoginInfo = (message, token, userName) => {
   $('.login-btn').innerText = userName;
 }
 
-
-
 const getLogout = () => {
   localStorage.clear();
   $('.login-btn').innerText = "로그인";
@@ -134,22 +132,15 @@ const getLogout = () => {
 }
 
 const isTokenValid = () => {
-  fetch("/api/token-validation", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
+  const fetchData = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  }
+  fetch("/api/token-validation", fetchData)
     .then(response => response.json())
-    .then(data => {
-      if (data.authResult) {
-        localStorage.setItem('username', data.id)
-        return true;
-      } else {
-        console.log('token-validation: error');
-        return false;
-      }
-    })
+    .then(data => data.authResult ? localStorage.setItem('username', data.id) : console.log('token-validation: error'))
     .catch(e => console.log(e))
 }
