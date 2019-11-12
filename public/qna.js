@@ -57,7 +57,7 @@ function QNA() {
     target.innerHTML = resultHTML;
   }
   async function initRender(callback) {
-    try  {
+    try {
       const res = await fetch(URL.INIT);
       const result = await res.json();
       setQnAList(data => result.list || data);
@@ -68,15 +68,53 @@ function QNA() {
 
   return {
     render() {
-      if(qnaList.length > 0) renderQnA(qnaList)
+      if (qnaList.length > 0) renderQnA(qnaList)
     },
     initComponent() {
-      initRender(()=>{console.log("init render end")})
+      initRender(() => { console.log("init render end") })
     }
   };
+}
+
+function Account() {
+  const login = () => {
+    fetch(URL.LOGIN, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ user: 'jjori-master' }),
+    }).then(res => {
+      if (res && res.status === 200) {
+        return res.json();
+      }
+      throw new Error(res.status);
+    }).then(data => {
+      if (data && data.token) {
+        localStorage.set('token', data.token);
+        return;
+      }
+
+      throw new Error(res.status);
+    }).catch(err => {
+      console.error(err);
+      alert(err && err.message || 'Login에 실패 하였습니다.\n관리자에게 문의하시기 바랍니다.')
+    });
+  };
+
+  return {
+    init() {
+      $(".login-btn").addEventListener('click', () => {
+        login();
+      });
+    }
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
+
+  const accountService = Account();
+  accountService.init();
 });
