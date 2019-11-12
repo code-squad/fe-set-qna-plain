@@ -2,7 +2,45 @@
 //Plain 구현
 const Plain = (() => {
   //구현이 필요해....
-t 
+
+  // 테스트
+  //debugger;
+
+  // 변수 선언
+  let setValue;
+  let readComponent;
+  let showEffectFunction;
+  let foo = '';
+
+  return {
+    // renderComponent 구현
+    renderComponent (Component) {
+      readComponent = Component;
+        
+        // Component 랜더링
+        readComponent().render();
+        showEffectFunction();
+      
+        return readComponent();
+    },
+    // useState 구현
+    useState (initValue) {
+      foo = setValue || initValue;
+      let setFoo = (newValue) => {
+        // 성공! 그런데 왜 foo가 아니라 setValue에서 작동하지?
+        setValue = newValue();
+        
+        // renderComponent 함수 호출
+        this.renderComponent(readComponent);
+      }
+      return [foo, setFoo];
+    },
+    // useEffect 구현
+    useEffect (effectFunction) {
+      showEffectFunction = effectFunction;
+      return showEffectFunction;
+    }
+  }
 })();
 
 function plain_test() {
