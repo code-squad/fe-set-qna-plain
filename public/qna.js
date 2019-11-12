@@ -97,10 +97,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem('token');
   if (token) isTokenValid(token);
 
-  $('.login-btn').addEventListener("click", () => {
-    $('.login-btn').innerText === '로그인' ? getLogin() : getLogout()
-  })
+  $('.login-btn').addEventListener("click", handleOnClick)
 });
+
+const handleOnClick = () => {
+  const token = localStorage.getItem('token');
+  token ? getLogout() : getLogin();
+}
 
 const getLogin = () => {
   const body = {
