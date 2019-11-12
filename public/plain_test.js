@@ -1,13 +1,16 @@
 
 //Plain 구현
 const Plain = (() => {
+  let foo = {};
   return {
     renderComponent(Component) {
       this.setFoo = (fn) => {
         this.value = typeof fn === 'function' ? fn(this.value) : null;
         this.component = Component();
-        this.component.render();
-        this.effect();
+        this.component.render();        
+        if(typeof this.effect === 'function') {
+          this.effect();
+      };
       };
       this.setFoo();
       return this.component;
