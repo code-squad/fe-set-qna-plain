@@ -10,27 +10,28 @@ const Plain = (() => {
   let setValue;
   let readComponent;
   let showEffectFunction;
+  let foo = '';
 
   return {
     // renderComponent 구현
     renderComponent (Component) {
-      readComponent = Component();
+      readComponent = Component;
         
-        // Component 초기화?
-        readComponent.render();
+        // Component 랜더링
+        readComponent().render();
         showEffectFunction();
       
-        return readComponent;
+        return readComponent();
     },
     // useState 구현
     useState (initValue) {
-      let foo = setValue || initValue;
+      foo = setValue || initValue;
       let setFoo = (newValue) => {
-        foo = newValue();
+        // 성공! 그런데 왜 foo가 아니라 setValue에서 작동하지?
+        setValue = newValue();
         
-        // Component 재랜딩
-        readComponent.render();
-        showEffectFunction();
+        // renderComponent 함수 호출
+        this.renderComponent(readComponent);
       }
       return [foo, setFoo];
     },
