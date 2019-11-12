@@ -4,7 +4,7 @@ const Plain = (() => {
   //구현이 필요해....
 
   // 테스트
-  debugger;
+  //debugger;
 
   // 변수 선언
   let setValue;
