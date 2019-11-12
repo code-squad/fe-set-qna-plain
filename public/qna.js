@@ -73,6 +73,26 @@ function QNA() {
       .then(res => res.json())
       .then(result => setStorage(result, id));
   }
+  // 답변 추가하기
+  async function addReplyHandler() {
+    try {
+      const questionid = this.closest('.qna').getAttribute('_questionid');
+      const qnaText = this.closest('.answer-form').querySelector('.answer-content-textarea').value;
+      const token = window.localStorage.getItem('token');
+      const res = await fetch(`/api/questions/${questionid}/answers`, {
+        method: 'post',
+        withCredentials: true,
+        credentials: 'include',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const result = await res.json();
+      if(result.status === 'success') {
+        console.log('add reply');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
   async function initRender(callback) {
     try  {
       const res = await fetch(URL.INIT);
@@ -80,6 +100,9 @@ function QNA() {
       setQnAList(data => result.list || data);
 
       $('.login-btn').addEventListener('click', loginHandler);
+
+      const submitBtn = document.querySelectorAll('.comment-submit');
+      Array.from(submitBtn).map((v) => v.addEventListener('click', addReplyHandler));
     } catch (err) {
       console.error("render fetching error");
     }
@@ -87,6 +110,7 @@ function QNA() {
 
   return {
     render() {
+      console.log('render => ', qnaList);
       if(qnaList.length > 0) renderQnA(qnaList)
     },
     initComponent() {
