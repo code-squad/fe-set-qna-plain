@@ -4,6 +4,7 @@
     INIT: "http://localhost:3000/api/questions",
     LOGIN: "http://localhost:3000/api/login",
     CHECK_TOKEN_VALIDATION: "http://localhost:3000/api/token-validation",
+    ADD_COMMENT: "http://localhost:3000/api/questions/${questionId}/answers",
   };
   const LOGIN_STATUS = {
     LOGIN: 0,
@@ -15,6 +16,14 @@
   const $loginBtn = $('.login-btn');
   const $logoutBtn = $('.logout-btn');
   const request = (url, param = {}) => {
+    if (param.params) {
+      const params = param.params;
+      for (const key in params) {
+        url = url.replace(`\$\{${key}\}`, params[key]);
+      }
+    }
+    console.log(`[Request] URL = ${url}`, param.params);
+
     return fetch(url, param).then((res) => {
       if (res.status === 400) {
         throw new Error('Bad Request');
@@ -87,11 +96,14 @@
 
     const registerComment = async (questionId, newAnswer, signal) => {
       try {
-        const res = await request(`/api/questions/${questionId}/answers`, { 
+        const res = await request(URL.ADD_COMMENT, { 
           method: 'POST', 
           headers,
           signal,
           body: JSON.stringify(newAnswer),
+          params: {
+            questionId,
+          },
         });
 
         if (res.status === 200) {
