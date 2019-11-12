@@ -94,39 +94,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem('token')
   if (token) isTokenValid(token) ? qnaService.initComponent() : '';
 
-  $('.login-btn').addEventListener("click", () => $('.login-btn').innerText === '로그인' ? getLogin() : getLogout())
+  $('.login-btn').addEventListener("click", () => {
+    $('.login-btn').innerText === '로그인' ? getLogin() : getLogout()
+  })
 });
 
 const getLogin = () => {
-  const fetchData = {
+  const body = {
     user: 'soom'
   };
-  let isSuccess = false;
-  fetch(URL.LOGIN, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(fetchData),
-    })
+
+  const fetchData = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body),
+  }
+
+  fetch(URL.LOGIN, fetchData)
     .then(response => response.json())
-    .then(data => {
-      if (data.auth) {
-        console.log(data.message, '로그인 되셨습니당...');
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('username', fetchData.user);
-        isSuccess = !isSuccess;
-      } else {
-        console.log('login: error')
-      }
-    }).then(() => {
-      if (isSuccess) {
-        const userName = localStorage.getItem('username');
-        $('.login-btn').innerText = userName;
-      }
-    })
+    .then(data => data.auth ? setLoginInfo(data.message, data.token, body.user) : console.log('login: error'))
     .catch(e => console.log(e));
 }
+
+const setLoginInfo = (message, token, userName) => {
+  console.log(message, '로그인 되셨습니당...');
+  localStorage.setItem('token', token);
+  localStorage.setItem('username', userName);
+  $('.login-btn').innerText = userName;
+}
+
+
 
 const getLogout = () => {
   localStorage.clear();
