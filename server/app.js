@@ -60,6 +60,14 @@ app.post(
     //Promise를 활용한 지연 응답. 
     //res.json메서드를 활용한 응답.
     //여기에 구현 필요
+    const _promise = new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve("success");
+      }, 3000);
+    });
+    _promise.then((msg) => {
+      res.json({ "status": msg, id: req.params.questionid });
+    });
   }
 );
 
