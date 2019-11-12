@@ -56,7 +56,14 @@ function QNA() {
     const resultHTML = getQnATemplate(data);
     target.innerHTML = resultHTML;
   }
-  function login() {
+  // 로컬 스토리지에 토큰 추가
+  function setStorage(result, id) {
+    console.log('login!');
+    const storage = window.localStorage;
+    storage.setItem('token', result.token);
+    $('.login-btn').innerText = `로그아웃${id}`;
+  }
+  function loginHandler() {
     const id = 'admin ';
     fetch(URL.LOGIN, {
       method: 'post',
@@ -64,14 +71,7 @@ function QNA() {
       headers: { 'Content-type': 'application/json' }
     })
       .then(res => res.json())
-      .then(res => {
-        console.log('login!');
-        const storage = window.localStorage;
-        storage.setItem('token', res.token);
-        // 실행시 에러가 발생해서 일단 주석 처리
-        // setLoginId(() => id);
-        $('.login-btn').innerText = `로그아웃${id}`;
-      })
+      .then(result => setStorage(result, id));
   }
   async function initRender(callback) {
     try  {
@@ -79,7 +79,7 @@ function QNA() {
       const result = await res.json();
       setQnAList(data => result.list || data);
 
-      $('.login-btn').addEventListener('click', login);
+      $('.login-btn').addEventListener('click', loginHandler);
     } catch (err) {
       console.error("render fetching error");
     }
@@ -102,8 +102,8 @@ const checkTokenValid = () => {
     method: 'post',
     headers: { 'Authorization': `Bearer ${token}` },
   }).then(res => res.json())
-    .then(res => {
-      if(res.authResult) $('.login-btn').innerText = `로그아웃(${res.id})`;
+    .then(result => {
+      if(result.authResult) $('.login-btn').innerText = `로그아웃(${result.id})`;
     })
 };
 
