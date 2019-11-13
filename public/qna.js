@@ -56,7 +56,15 @@ function QNA() {
     const resultHTML = getQnATemplate(data);
     target.innerHTML = resultHTML;
   }
-  function login() {
+
+  // 로컬 스토리지에 토큰 추가
+  function setStorage(result, id) {
+    console.log('login!');
+    const storage = window.localStorage;
+    storage.setItem('token', result.token);
+    $('.login-btn').innerText = `로그아웃(${id})`;
+  }
+  function loginHandler() {
     const id = 'admin ';
     fetch(URL.LOGIN, {
       method: 'post',
@@ -64,22 +72,43 @@ function QNA() {
       headers: { 'Content-type': 'application/json' }
     })
       .then(res => res.json())
-      .then(res => {
-        console.log('login!');
-        const storage = window.localStorage;
-        storage.setItem('token', res.token);
-        // 실행시 에러가 발생해서 일단 주석 처리
-        // setLoginId(() => id);
-        $('.login-btn').innerText = `로그아웃${id}`;
-      })
+      .then(result => setStorage(result, id));
   }
+
+  // 답변 추가하기
+  async function addReply(reply) {
+    const token = window.localStorage.getItem('token');
+    const res = await fetch(`/api/questions/${reply.questionId}/answers`, {
+      method: 'post',
+      withCredentials: true,
+      credentials: 'include',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const result = await res.json();
+    if(result.status === 'success') {
+      let targetAnswer = qnaList.filter((v) => v.questionId === +reply.questionId)[0].answers;
+      targetAnswer.push(reply);
+      setQnAList(data => qnaList || data);
+    }
+  }
+  function addReplyHandler() {
+    const questionId = +this.closest('.qna').getAttribute('_questionid');
+    const content = this.closest('.answer-form').querySelector('.answer-content-textarea').value;
+    const now = new Date();
+    const reply = {
+      content,
+      questionId,
+      name: 'admin',
+      date: `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+    };
+    addReply(reply).then(res => console.log("add apply end"));
+  }
+
   async function initRender(callback) {
     try  {
       const res = await fetch(URL.INIT);
       const result = await res.json();
       setQnAList(data => result.list || data);
-
-      $('.login-btn').addEventListener('click', login);
     } catch (err) {
       console.error("render fetching error");
     }
@@ -87,7 +116,13 @@ function QNA() {
 
   return {
     render() {
-      if(qnaList.length > 0) renderQnA(qnaList)
+      console.log('render => ', qnaList);
+      if(qnaList.length > 0) renderQnA(qnaList);
+
+      $('.login-btn').addEventListener('click', loginHandler);
+
+      const submitBtn = document.querySelectorAll('.comment-submit');
+      Array.from(submitBtn).map((v) => v.addEventListener('click', addReplyHandler));
     },
     initComponent() {
       initRender(()=>{console.log("init render end")})
@@ -102,8 +137,8 @@ const checkTokenValid = () => {
     method: 'post',
     headers: { 'Authorization': `Bearer ${token}` },
   }).then(res => res.json())
-    .then(res => {
-      if(res.authResult) $('.login-btn').innerText = `로그아웃(${res.id})`;
+    .then(result => {
+      if(result.authResult) $('.login-btn').innerText = `로그아웃(${result.id})`;
     })
 };
 
