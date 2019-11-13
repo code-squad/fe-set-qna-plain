@@ -51,7 +51,6 @@ function QNA() {
   //login 과정도 useState로 구현할 수 있음
   const [loginId, setLoginId] = Plain.useState(null);
 
-  Plain.resetIndex();
   function renderQnA(data) {
     const target = $(".qna-wrap");
     const resultHTML = getQnATemplate(data);
@@ -63,7 +62,7 @@ function QNA() {
     console.log('login!');
     const storage = window.localStorage;
     storage.setItem('token', result.token);
-    $('.login-btn').innerText = `로그아웃${id}`;
+    $('.login-btn').innerText = `로그아웃(${id})`;
   }
   function loginHandler() {
     const id = 'admin ';
@@ -91,7 +90,7 @@ function QNA() {
     }
   }
   function addReplyHandler() {
-    const questionId = this.closest('.qna').getAttribute('_questionid');
+    const questionId = +this.closest('.qna').getAttribute('_questionid');
     const content = this.closest('.answer-form').querySelector('.answer-content-textarea').value;
     const now = new Date();
     const reply = {
@@ -102,16 +101,12 @@ function QNA() {
     };
     addReply(reply).then(res => console.dir(res));
   }
+
   async function initRender(callback) {
     try  {
       const res = await fetch(URL.INIT);
       const result = await res.json();
       setQnAList(data => result.list || data);
-
-      $('.login-btn').addEventListener('click', loginHandler);
-
-      const submitBtn = document.querySelectorAll('.comment-submit');
-      Array.from(submitBtn).map((v) => v.addEventListener('click', addReplyHandler));
     } catch (err) {
       console.error("render fetching error");
     }
@@ -120,7 +115,12 @@ function QNA() {
   return {
     render() {
       console.log('render => ', qnaList);
-      if(qnaList.length > 0) renderQnA(qnaList)
+      if(qnaList.length > 0) renderQnA(qnaList);
+
+      $('.login-btn').addEventListener('click', loginHandler);
+
+      const submitBtn = document.querySelectorAll('.comment-submit');
+      Array.from(submitBtn).map((v) => v.addEventListener('click', addReplyHandler));
     },
     initComponent() {
       initRender(()=>{console.log("init render end")})
