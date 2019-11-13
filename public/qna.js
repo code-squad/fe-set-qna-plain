@@ -99,7 +99,7 @@ function QNA() {
       content,
       questionId,
       name: 'admin',
-      data: `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+      date: `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
     };
     addReply(reply).then(res => console.log("add apply end"));
   }
