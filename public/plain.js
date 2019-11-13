@@ -1,24 +1,30 @@
 //Plain 구현
 const Plain = (() => {
-    return {
-      renderComponent(Component) {
-        this.setFoo = (fn) => {
-          this.value = typeof fn === 'function' ? fn(this.value) : null;
-          this.component = Component();
-          this.component.render();
-          if(typeof this.effect === 'function') {
-              this.effect();
-          };
+  let component;
+  let value;
+  let effect;
+  let setFoo;
+
+  return {
+    renderComponent(Component) {
+      setFoo = (fn) => {
+        value = typeof fn === 'function' ? fn(this.value) : null;
+        component = Component();
+        component.render();
+        if (typeof effect === 'function') {
+          effect();
         };
-        this.setFoo();
-        return this.component;
-      },
-      useState(value) {
-        return [this.value || value, this.setFoo];
-      },
-  
-      useEffect(e){
-        this.effect = e;
-      },
-    }
-  })();
+      };
+
+      setFoo();
+      return component;
+    },
+    useState(_value) {
+      return [value || _value, setFoo];
+    },
+
+    useEffect(e) {
+      effect = e;
+    },
+  }
+})();
