@@ -51,11 +51,13 @@ function QNA() {
   //login 과정도 useState로 구현할 수 있음
   const [loginId, setLoginId] = Plain.useState(null);
 
+  Plain.resetIndex();
   function renderQnA(data) {
     const target = $(".qna-wrap");
     const resultHTML = getQnATemplate(data);
     target.innerHTML = resultHTML;
   }
+
   // 로컬 스토리지에 토큰 추가
   function setStorage(result, id) {
     console.log('login!');
@@ -73,25 +75,32 @@ function QNA() {
       .then(res => res.json())
       .then(result => setStorage(result, id));
   }
+
   // 답변 추가하기
-  async function addReplyHandler() {
-    try {
-      const questionid = this.closest('.qna').getAttribute('_questionid');
-      const qnaText = this.closest('.answer-form').querySelector('.answer-content-textarea').value;
-      const token = window.localStorage.getItem('token');
-      const res = await fetch(`/api/questions/${questionid}/answers`, {
-        method: 'post',
-        withCredentials: true,
-        credentials: 'include',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      const result = await res.json();
-      if(result.status === 'success') {
-        console.log('add reply');
-      }
-    } catch (e) {
-      console.error(e);
+  async function addReply(reply) {
+    const token = window.localStorage.getItem('token');
+    const res = await fetch(`/api/questions/${reply.questionId}/answers`, {
+      method: 'post',
+      withCredentials: true,
+      credentials: 'include',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const result = await res.json();
+    if(result.status === 'success') {
+      console.log('add reply');
     }
+  }
+  function addReplyHandler() {
+    const questionId = this.closest('.qna').getAttribute('_questionid');
+    const content = this.closest('.answer-form').querySelector('.answer-content-textarea').value;
+    const now = new Date();
+    const reply = {
+      content,
+      questionId,
+      name: 'admin',
+      data: `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+    };
+    addReply(reply).then(res => console.dir(res));
   }
   async function initRender(callback) {
     try  {
