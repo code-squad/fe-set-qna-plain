@@ -86,7 +86,9 @@ function QNA() {
     });
     const result = await res.json();
     if(result.status === 'success') {
-      console.log('add reply');
+      let targetAnswer = qnaList.filter((v) => v.questionId === +reply.questionId)[0].answers;
+      targetAnswer.push(reply);
+      setQnAList(data => qnaList || data);
     }
   }
   function addReplyHandler() {
@@ -99,7 +101,7 @@ function QNA() {
       name: 'admin',
       data: `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
     };
-    addReply(reply).then(res => console.dir(res));
+    addReply(reply).then(res => console.log("add apply end"));
   }
 
   async function initRender(callback) {
