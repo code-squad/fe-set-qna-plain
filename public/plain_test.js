@@ -1,8 +1,28 @@
 
 //Plain 구현
 const Plain = (() => {
-  //구현이 필요해....
-t 
+  let foo = {};
+  return {
+    renderComponent(Component) {
+      this.setFoo = (fn) => {
+        this.value = typeof fn === 'function' ? fn(this.value) : null;
+        this.component = Component();
+        this.component.render();        
+        if(typeof this.effect === 'function') {
+          this.effect();
+      };
+      };
+      this.setFoo();
+      return this.component;
+    },
+    useState(value) {
+      return [this.value || value, this.setFoo];
+    },
+
+    useEffect(e){
+      this.effect = e;
+    },
+  }
 })();
 
 function plain_test() {
@@ -33,10 +53,10 @@ function plain_test() {
 let pd = Plain.renderComponent(plain_test);
 
 (async function loop() {
-  for(let i=0; i<5; i++) {
-    await new Promise( (resolve) => setTimeout( ()=> {
+  for (let i = 0; i < 5; i++) {
+    await new Promise((resolve) => setTimeout(() => {
       pd.fakeEvent();
-    resolve()
+      resolve()
     }, 1000));
   }
 })();
