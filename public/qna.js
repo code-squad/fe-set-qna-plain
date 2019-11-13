@@ -1,11 +1,17 @@
-
 const $ = document.querySelector.bind(document);
 const URL = {
   INIT: "http://localhost:3000/api/questions",
-  LOGIN: "http://localhost:3000/api/login"
+  LOGIN: "http://localhost:3000/api/login",
+  VALIDATION: "http://localhost:3000/api/token-validation"
 };
+
 function getQnATemplate(list) {
-  return list.reduce((html, { title, question, questionId, answers }) => {
+  return list.reduce((html, {
+    title,
+    question,
+    questionId,
+    answers
+  }) => {
     return (
       html +
       ` <li class="qna" _questionId=${+questionId}>
@@ -29,7 +35,11 @@ function getQnATemplate(list) {
 
 
 function getAnswerTemplate(answers) {
-  return answers.reduce((html, { content, name, date }) => {
+  return answers.reduce((html, {
+    content,
+    name,
+    date
+  }) => {
     return (
       html +
       `
@@ -57,7 +67,7 @@ function QNA() {
     target.innerHTML = resultHTML;
   }
   async function initRender(callback) {
-    try  {
+    try {
       const res = await fetch(URL.INIT);
       const result = await res.json();
       setQnAList(data => result.list || data);
@@ -68,15 +78,89 @@ function QNA() {
 
   return {
     render() {
-      if(qnaList.length > 0) renderQnA(qnaList)
+      if (qnaList.length > 0) renderQnA(qnaList)
     },
     initComponent() {
-      initRender(()=>{console.log("init render end")})
+      initRender(() => {
+        console.log("init render end")
+      })
     }
   };
 }
 
+let validation = false;
+
 document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
+
+  checkTokenValidation();
+  $('.login-btn').addEventListener("click", handleOnClick);
 });
+
+const checkTokenValidation = () => {
+  const token = localStorage.getItem('token');
+  if (token) isTokenValid(token);
+}
+
+const handleOnClick = () => {
+  const token = localStorage.getItem('token');
+  token ? getLogout() : getLogin();
+}
+
+const getLogin = () => {
+  const body = {
+    user: 'soom'
+  };
+
+  const fetchData = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body),
+  }
+
+  fetch(URL.LOGIN, fetchData)
+    .then(response => response.json())
+    .then(data => data.auth ? setLoginInfo(data.message, data.token, body.user) : console.log('login: error'))
+    .catch(e => console.log(e));
+}
+
+const setLoginInfo = (message, token, userName) => {
+  console.log(message, '로그인 되셨습니당...');
+  localStorage.setItem('token', token);
+  setUserName(userName);
+}
+
+const getLogout = () => {
+  localStorage.clear();
+  $('.login-btn').innerText = "로그인";
+  console.log('로그아웃 되셨습니당...')
+}
+
+const isTokenValid = token => {
+  const fetchData = {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  }
+  fetch(URL.VALIDATION, fetchData)
+    .then(response => response.json())
+    .then(data => {
+      if (data.authResult) {
+        setUserName(data.id);
+        validation = !validation;
+      } else {
+        console.log('토큰이 유효하지 않습니다.');
+        getLogout();
+      }
+    })
+    .catch(e => console.log(e));
+}
+
+const setUserName = (userName) => {
+  localStorage.setItem('username', userName);
+  $('.login-btn').innerText = userName;
+}
