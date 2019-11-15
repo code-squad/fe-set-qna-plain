@@ -1,4 +1,3 @@
-
 const $ = document.querySelector.bind(document);
 const URL = {
   INIT: "http://localhost:3000/api/questions",
@@ -80,3 +79,26 @@ document.addEventListener("DOMContentLoaded", () => {
   let qnaService = Plain.renderComponent(QNA);
   qnaService.initComponent();
 });
+
+function login(){
+  fetch('/api/login', {
+    mode: 'cors', 
+    method: 'POST',
+    body: JSON.stringify({user:'user'}),
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  })    
+  .then(function(response) {  
+    if(response.status >= 400) throw 'error'; 
+    return response.text();
+  })
+  .then(function(text) {  
+    let data = JSON.parse(text);
+    localStorage.setItem('token', data.token);
+  })  
+  .catch(function(error) {  
+    console.log('Request failed', error);  
+  });
+  
+}
