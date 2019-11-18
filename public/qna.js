@@ -60,7 +60,7 @@ function QNA() {
   }
   async function initRender(callback) {
     try {
-      const res = await fetch(URL.INIT); fetch(URL.INIT);
+      const res = await fetch(URL.INIT);
       const result = await res.json();
       setQnAList(data => result.list || data);
 
