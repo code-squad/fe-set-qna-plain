@@ -59,12 +59,8 @@ app.post(
       res.status(400).send({ error: "data is not found" });
     }
 
-  
     const questionid = ( req.params && req.params.questionid ) || null;
   
-    console.log('params is ', req.params);
-    console.log('questionid: is ', questionid);
-
     if (!questionid) {
       return res.status(400).send({ error: "Must have questionId." });
     }
