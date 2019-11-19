@@ -15,7 +15,7 @@ const jwtValidator = express_jwt({
   requestProperty: "payload"
 });
 
-app.listen(3000, function() {
+app.listen(3000, function () {
   console.log("start, express server on port 3000");
 });
 
@@ -26,17 +26,17 @@ const jsonParser = bodyParser.json();
 
 //routing 시작
 //로그인처리, generatorJwt함수를 통해서 jwt token발급
-app.post('/api/login', jsonParser,  function(req, res) {
-  const user  = req.body.user;
-  if(user) {
-      const token = auth.generateJwt(user, __secret_key);
-      res.json({
-          auth: true,
-          message: 'Authentication success!',
-          token: token
-        });
+app.post('/api/login', jsonParser, function (req, res) {
+  const user = req.body.user;
+  if (user) {
+    const token = auth.generateJwt(user, __secret_key);
+    res.json({
+      auth: true,
+      message: 'Authentication success!',
+      token: token
+    });
   } else {
-      res.json({ "login" : "fail" });
+    res.json({ "login": "fail" });
   }
 });
 
@@ -44,8 +44,8 @@ app.get("/api/questions", (req, res) => {
   return res.json(response_mock);
 });
 
-app.post("/api/questions", jsonParser, function(req, res) {
-    //do something..
+app.post("/api/questions", jsonParser, function (req, res) {
+  //do something..
 });
 
 //댓글신규등록
@@ -55,16 +55,41 @@ app.post(
   jsonParser,
   (req, res) => {
     const body = req.body;
-    if (!body) res.status(400).send({ error: "data is not found" });
+    if (!body) {
+      res.status(400).send({ error: "data is not found" });
+    }
+
+    const questionid = ( req.params && req.params.questionid ) || null;
+  
+    if (!questionid) {
+      return res.status(400).send({ error: "Must have questionId." });
+    }
 
     //Promise를 활용한 지연 응답. 
     //res.json메서드를 활용한 응답.
     //여기에 구현 필요
+
+    const question = response_mock.list.filter(question => {
+      return question.questionId = questionid;
+    })[0];
+
+    if(!question) {
+      return res.status(500).send({ error: 'To write new comment is Fail.' });
+    }
+
+    question.answers.push({
+      content: body.answer,
+      questionId: questionid,
+      name: 'jjori-master',
+      date: new Date().toISOString().split('T')[0],
+    });
+
+    return res.json(response_mock);
   }
 );
 
 //token이 있는지 확인. 실제확인은 jwtValidator 미들웨어에서 확인함
-app.post("/api/token-validation", jwtValidator, function(req, res) {
+app.post("/api/token-validation", jwtValidator, function (req, res) {
   res.json({
     authResult: true,
     id: req.payload._id
@@ -73,8 +98,8 @@ app.post("/api/token-validation", jwtValidator, function(req, res) {
 
 
 //logging 과정을 출력하는 fake logger역할
-app.post("/api/logging", jsonParser, function(req, res) {
-    const logType = req.body.logType;
-    console.log("[logging]", logType);
-    res.json({ loggin: "ok" });
-  });
+app.post("/api/logging", jsonParser, function (req, res) {
+  const logType = req.body.logType;
+  console.log("[logging]", logType);
+  res.json({ loggin: "ok" });
+});
